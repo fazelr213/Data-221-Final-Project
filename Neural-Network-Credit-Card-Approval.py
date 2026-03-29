@@ -74,6 +74,39 @@ trained_neural_network = neural_model.fit(
     verbose=1
 )
 
+# Predict probabilities for the test set
+# Use flatten() so it can be used with evaluation metrics
+neural_model_prob = neural_model.predict(X_test).flatten()
+
+# Convert Probabilities into 0 or 1 for predictions
+neural_model_predict = (neural_model_prob >= 0.5).astype(int)
+
+# Training Loss plot
+# Shows how loss changes over each epoch
+plt.figure()
+plt.plot(trained_neural_network.history["loss"], label = "Training Loss")
+plt.plot(trained_neural_network.history["val_loss"], label = "Validation Loss")
+plt.title("Loss plot")
+plt.xlabel("Epoch")
+plt.ylabel("Loss")
+plt.legend()
+plt.show()
+
+# Training accuracy plot
+# Shows how accuracy changes over each epoch
+plt.figure()
+plt.plot(trained_neural_network.history["accuracy"], label = "Training Accuracy")
+plt.plot(trained_neural_network.history["val_accuracy"], label = "Validation Accuracy")
+plt.title("Accuracy plot")
+plt.xlabel("Epoch")
+plt.ylabel("Accuracy")
+plt.legend()
+plt.show()
+
+
+
+
+
 
 
 
