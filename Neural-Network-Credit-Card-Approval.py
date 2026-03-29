@@ -1,14 +1,16 @@
 # Author Fazel Rabbi
 # Data 221 Final Project
 # Neural Network
-
-
+import numpy as np
+from matplotlib.lines import lineStyles
+from sklearn.metrics import roc_curve, confusion_matrix
 from sklearn.model_selection import train_test_split
 import pandas as pd
 import matplotlib.pyplot as plt
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, Input
 from sklearn.preprocessing import StandardScaler
+from tensorflow.python.ops.metrics_impl import false_positives, true_positives
 
 # Load the data and identify the target variable
 Data_frame_creditcard_approval = pd.read_csv("cleaned_data.csv")
@@ -103,6 +105,40 @@ plt.ylabel("Accuracy")
 plt.legend()
 plt.show()
 
+# ROC curve
+# helps visualize how the model separates the two classes
+false_positives_rate, true_positives_rate, threshold = roc_curve(Y_test, neural_model_prob)
+
+plt.figure()
+plt.plot(false_positives_rate, true_positives_rate, label="Neural Network")
+plt.plot([0,1], [0,1], linestyle = "--", label="Random Guess")
+plt.title("ROC Curve")
+plt.xlabel("False Positive Rate")
+plt.ylabel("True Positive Rate")
+plt.legend()
+plt.show()
+
+# Confusion Matrix
+# Shows the true positives, true negatives, false positives and false negatives
+neural_model_cm = confusion_matrix(Y_test, neural_model_predict)
+
+labels = np.array([["True Negative", "False Positive"], ["False Negative", "True Positive"]])
+
+
+plt.figure()
+plt.imshow(neural_model_cm, cmap="Blues")
+plt.title("Confusion Matrix")
+plt.colorbar()
+plt.xlabel("Predicted Labels")
+plt.ylabel("Actual Labels")
+plt.xticks([0, 1], ["0", "1"])
+plt.yticks([0, 1], ["0", "1"])
+
+for x in range(2):
+    for y in range(2):
+        plt.text(y, x, f"{labels[x][y]}\n{neural_model_cm[x][y]}", ha="center", va="center", color="black")
+
+plt.show()
 
 
 
