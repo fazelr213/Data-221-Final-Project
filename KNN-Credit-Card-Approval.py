@@ -3,7 +3,7 @@
 # KNN Model
 import numpy as np
 from sklearn.metrics import roc_curve, confusion_matrix, accuracy_score, precision_score, recall_score, f1_score, \
-    roc_auc_score
+    roc_auc_score, classification_report
 from sklearn.model_selection import train_test_split
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -58,11 +58,45 @@ for x in k_values:
     f1_scores.append(f1_score(Y_test, knn_model_predict))
     roc_auc_scores.append(roc_auc_score(Y_test, knn_model_prob))
 
-results_kvalues = pd.DataFrame({
-    "K Values": list(k_values),
-    "Accuracy": accuracy_scores,
-    "F1 Scores": f1_scores,
-    "ROC-AUC": roc_auc_scores
-})
+# Create a storage for the combined value of ROC-AUC and f1 Scores
+combined_score = []
+
+# Append all combined scores to the empty list
+# Give a higher weight to ROC-AUC score because it is a more important metric
+for i in range(len(k_values)):
+    score = (0.7 * roc_auc_scores[i] + 0.3 * f1_scores[i]) / 2
+    combined_score.append(score)
+
+# Find the best K based on the combined score
+best_index = combined_score.index(max(combined_score))
+best_k = list(k_values)[best_index]
+
+# Train the model using the best K value
+best_knn_model = KNeighborsClassifier(n_neighbors=best_k)
+best_knn_model.fit(X_train, Y_train)
+best_knn_predict = best_knn_model.predict(X_test)
+best_knn_prob = best_knn_model.predict_proba(X_test)[:, 1]
+
+# Final evaluation
+best_accuracy = accuracy_score(Y_test, best_knn_predict)
+best_recall = recall_score(Y_test, best_knn_predict)
+best_precision = precision_score(Y_test, best_knn_predict)
+best_f1 = f1_score(Y_test, best_knn_predict)
+best_roc_auc = roc_auc_score(Y_test, best_knn_prob)
+best_confusion_matrix = confusion_matrix(Y_test, best_knn_predict)
+
+print(f"Best K: {best_k}")
+print(f"Accuracy: {best_accuracy:.4f}")
+print(f"Recall: {best_recall:.4f}")
+print(f"Precision: {best_precision:.4f}")
+print(f"F1 Score: {best_f1:.4f}")
+print(f"ROC-AUC: {best_roc_auc:.4f}")
+
+
+
+
+
+
+
 
 
