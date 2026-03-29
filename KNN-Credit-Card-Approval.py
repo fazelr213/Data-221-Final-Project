@@ -3,14 +3,12 @@
 # KNN Model
 import numpy as np
 from sklearn.metrics import roc_curve, confusion_matrix, accuracy_score, precision_score, recall_score, f1_score, \
-    roc_auc_score, classification_report
+    roc_auc_score
 from sklearn.model_selection import train_test_split
 import pandas as pd
 import matplotlib.pyplot as plt
 from sklearn.preprocessing import StandardScaler
 from sklearn.neighbors import KNeighborsClassifier
-
-
 
 # Load the data and identify the target variable
 Data_frame_creditcard_approval = pd.read_csv("cleaned_data.csv")
@@ -20,7 +18,7 @@ Y = Data_frame_creditcard_approval['TARGET']
 
 # Encode Categorical variables
 # Converts Categorical values into numerical ones
-# drop_true=True avoids duplicate columns, do this so it doesnt confuse the model
+# drop_true=True avoids duplicate columns, do this so it doesn't confuse the model
 X = pd.get_dummies(X, drop_first=True)
 
 # Train Test Split
@@ -31,7 +29,7 @@ X_train, X_test, Y_train, Y_test = train_test_split(
     test_size=0.2
 )
 
-# Scale and standardize the input data so the neural network trains better
+# Scale and standardize the input data so KNN distance calculations work properly
 scaler = StandardScaler()
 
 # Fit the scaler on the training set then transform it, then only transform the testing set
@@ -64,7 +62,7 @@ combined_score = []
 # Append all combined scores to the empty list
 # Give a higher weight to ROC-AUC score because it is a more important metric
 for i in range(len(k_values)):
-    score = (0.7 * roc_auc_scores[i] + 0.3 * f1_scores[i]) / 2
+    score = (0.7 * roc_auc_scores[i] + 0.3 * f1_scores[i])
     combined_score.append(score)
 
 # Find the best K based on the combined score
@@ -92,7 +90,49 @@ print(f"Precision: {best_precision:.4f}")
 print(f"F1 Score: {best_f1:.4f}")
 print(f"ROC-AUC: {best_roc_auc:.4f}")
 
+# Plot Accuracy, F1 and ROC against K
+plt.figure()
+plt.plot(k_values, accuracy_scores, marker="o", label="Accuracy")
+plt.plot(k_values, f1_scores, marker="o", label="F1 Score")
+plt.plot(k_values, roc_auc_scores, marker="o", label="ROC-AUC")
+plt.xlabel("K Values")
+plt.ylabel("Scores")
+plt.title("KNN Evaluation for different K values")
+plt.legend()
+plt.grid(True)
+plt.show()
 
+# ROC curve for the best K
+false_positives_rate, true_positives_rate, thresholds = roc_curve(Y_test, best_knn_prob)
+
+plt.figure()
+plt.plot(false_positives_rate, true_positives_rate, label=f"KNN ROC Curve")
+plt.plot([0,1], [0,1], linestyle = "--")
+plt.xlabel("False Positive Rate")
+plt.ylabel("True Positive Rate")
+plt.title("ROC Curve for the best K value")
+plt.legend()
+plt.grid(True)
+plt.show()
+
+# Confusion Matrix plot
+labels = np.array([["True Negative", "False Positive"], ["False Negative", "True Positive"]])
+
+
+plt.figure()
+plt.imshow(best_confusion_matrix, cmap="Blues")
+plt.title("Confusion Matrix")
+plt.colorbar()
+plt.xlabel("Predicted Labels")
+plt.ylabel("Actual Labels")
+plt.xticks([0, 1], ["0", "1"])
+plt.yticks([0, 1], ["0", "1"])
+
+for x in range(2):
+    for y in range(2):
+        plt.text(y, x, f"{labels[x][y]}\n{best_confusion_matrix[x][y]}", ha="center", va="center", color="black")
+
+plt.show()
 
 
 

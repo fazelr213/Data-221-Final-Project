@@ -142,11 +142,11 @@ plt.show()
 
 # Evaluation Metrics
 
-print("Accuracy: ", accuracy_score(Y_test, neural_model_predict))
-print("Precision: ", precision_score(Y_test, neural_model_predict, zero_division=0))
-print("Recall: ", recall_score(Y_test, neural_model_predict, zero_division=0))
-print("F1-Score: ", f1_score(Y_test, neural_model_predict, zero_division=0))
-print("ROC-AUC: ", roc_auc_score(Y_test, neural_model_prob))
+print(f"Accuracy: {accuracy_score(Y_test, neural_model_predict):.4f}")
+print(f"Precision: {precision_score(Y_test, neural_model_predict, zero_division=0):.4f}")
+print(f"Recall: {recall_score(Y_test, neural_model_predict, zero_division=0):.4f}")
+print(f"F1-Score: {f1_score(Y_test, neural_model_predict, zero_division=0):.4f}")
+print(f"ROC-AUC: {roc_auc_score(Y_test, neural_model_prob):.4f}")
 
 
 
