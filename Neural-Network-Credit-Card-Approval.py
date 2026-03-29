@@ -2,15 +2,15 @@
 # Data 221 Final Project
 # Neural Network
 import numpy as np
-from matplotlib.lines import lineStyles
-from sklearn.metrics import roc_curve, confusion_matrix
+from sklearn.metrics import roc_curve, confusion_matrix, accuracy_score, precision_score, recall_score, f1_score, \
+    roc_auc_score
 from sklearn.model_selection import train_test_split
 import pandas as pd
 import matplotlib.pyplot as plt
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, Input
 from sklearn.preprocessing import StandardScaler
-from tensorflow.python.ops.metrics_impl import false_positives, true_positives
+
 
 # Load the data and identify the target variable
 Data_frame_creditcard_approval = pd.read_csv("cleaned_data.csv")
@@ -140,10 +140,13 @@ for x in range(2):
 
 plt.show()
 
+# Evaluation Metrics
 
-
-
-
+print("Accuracy: ", accuracy_score(Y_test, neural_model_predict))
+print("Precision: ", precision_score(Y_test, neural_model_predict, zero_division=0))
+print("Recall: ", recall_score(Y_test, neural_model_predict, zero_division=0))
+print("F1-Score: ", f1_score(Y_test, neural_model_predict, zero_division=0))
+print("ROC-AUC: ", roc_auc_score(Y_test, neural_model_prob))
 
 
 
