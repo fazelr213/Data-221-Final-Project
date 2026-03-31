@@ -28,7 +28,8 @@ X_train, X_test, Y_train, Y_test = train_test_split(
     X,
     Y,
     random_state=42,
-    test_size=0.2
+    test_size=0.2,
+    stratify=Y
 )
 
 # Scale and standardize the input data so the neural network trains better
@@ -81,29 +82,8 @@ trained_neural_network = neural_model.fit(
 neural_model_prob = neural_model.predict(X_test).flatten()
 
 # Convert Probabilities into 0 or 1 for predictions
-neural_model_predict = (neural_model_prob >= 0.5).astype(int)
+neural_model_predict = (neural_model_prob >= 0.3).astype(int)
 
-# Training Loss plot
-# Shows how loss changes over each epoch
-plt.figure()
-plt.plot(trained_neural_network.history["loss"], label = "Training Loss")
-plt.plot(trained_neural_network.history["val_loss"], label = "Validation Loss")
-plt.title("Loss plot")
-plt.xlabel("Epoch")
-plt.ylabel("Loss")
-plt.legend()
-plt.show()
-
-# Training accuracy plot
-# Shows how accuracy changes over each epoch
-plt.figure()
-plt.plot(trained_neural_network.history["accuracy"], label = "Training Accuracy")
-plt.plot(trained_neural_network.history["val_accuracy"], label = "Validation Accuracy")
-plt.title("Accuracy plot")
-plt.xlabel("Epoch")
-plt.ylabel("Accuracy")
-plt.legend()
-plt.show()
 
 # ROC curve
 # helps visualize how the model separates the two classes

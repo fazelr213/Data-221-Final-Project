@@ -26,7 +26,8 @@ X_train, X_test, Y_train, Y_test = train_test_split(
     X,
     Y,
     random_state=42,
-    test_size=0.2
+    test_size=0.2,
+    stratify=Y
 )
 
 # Scale and standardize the input data so KNN distance calculations work properly
@@ -41,7 +42,7 @@ k_values = range(1, 21)
 
 # Create storage for evaluation metrics
 accuracy_scores = []
-f1_scores = []
+recall_scores = []
 roc_auc_scores = []
 
 # Build the KNN model for each value of k
@@ -53,7 +54,7 @@ for x in k_values:
 
     # Append the results to the evaluation metrics storage
     accuracy_scores.append(accuracy_score(Y_test, knn_model_predict))
-    f1_scores.append(f1_score(Y_test, knn_model_predict))
+    recall_scores.append(recall_score(Y_test, knn_model_predict))
     roc_auc_scores.append(roc_auc_score(Y_test, knn_model_prob))
 
 # Create a storage for the combined value of ROC-AUC and f1 Scores
@@ -62,7 +63,7 @@ combined_score = []
 # Append all combined scores to the empty list
 # Give a higher weight to ROC-AUC score because it is a more important metric
 for i in range(len(k_values)):
-    score = (0.7 * roc_auc_scores[i] + 0.3 * f1_scores[i])
+    score = (0.5 * roc_auc_scores[i] + 0.5 * recall_scores[i])
     combined_score.append(score)
 
 # Find the best K based on the combined score
@@ -89,18 +90,6 @@ print(f"Recall: {best_recall:.4f}")
 print(f"Precision: {best_precision:.4f}")
 print(f"F1 Score: {best_f1:.4f}")
 print(f"ROC-AUC: {best_roc_auc:.4f}")
-
-# Plot Accuracy, F1 and ROC against K
-plt.figure()
-plt.plot(k_values, accuracy_scores, marker="o", label="Accuracy")
-plt.plot(k_values, f1_scores, marker="o", label="F1 Score")
-plt.plot(k_values, roc_auc_scores, marker="o", label="ROC-AUC")
-plt.xlabel("K Values")
-plt.ylabel("Scores")
-plt.title("KNN Evaluation for different K values")
-plt.legend()
-plt.grid(True)
-plt.show()
 
 # ROC curve for the best K
 false_positives_rate, true_positives_rate, thresholds = roc_curve(Y_test, best_knn_prob)
